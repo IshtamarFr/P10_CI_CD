@@ -3,18 +3,27 @@ name: CI CD Pipeline
 on:
   push:
     branches:
-      - sub
+      - main
 
 jobs:
-  tests-back-end:
+  analyze-back-end:
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: ./back
+    permissions: read-all
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
 
       - name: Launch tests
         run: mvn test
@@ -28,7 +37,25 @@ jobs:
           name: jacoco-report
           path: back/target/site/jacoco/index.html
 
-  tests-front-end:
+      - name: Cache SonarQube packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+      - name: Cache Maven packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+      - name: Build and analyze
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=IshtamarFr_P10_CI_CD_back -Dsonar.projectName='P10_CI_CD_back'
+
+  analyze-front-end:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -50,58 +77,6 @@ jobs:
           name: jasmine-report
           path: front/coverage/bobapp/lcov.info
 
-  sonarqube-back:
-    needs: [tests-back-end]
-
-    runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        working-directory: ./back
-    permissions: read-all
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: 17
-      - name: Cache SonarQube packages
-        uses: actions/cache@v3
-        with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
-      - name: Cache Maven packages
-        uses: actions/cache@v3
-        with:
-          path: ~/.m2
-          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-m2
-      - name: Build and analyze
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=IshtamarFr_P10_CI_CD_back -Dsonar.projectName='P10_CI_CD_back'
-
-  sonarqube-front:
-    needs: [tests-front-end]
-
-    runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        working-directory: ./front
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Install dependencies
-        run: npm install
-
       - name: install scanner
         run: npm install -g sonarqube-scanner
 
@@ -109,7 +84,7 @@ jobs:
         run: sonar-scanner -Dsonar.token=${{secrets.SONAR_TOKEN}}
 
   build-push-dockers:
-    needs: [sonarqube-back, sonarqube-front]
+    needs: [analyze-back-end, analyze-front-end]
 
     runs-on: ubuntu-latest
 
