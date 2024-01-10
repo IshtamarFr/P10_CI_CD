@@ -7,7 +7,6 @@ node_modules/
 dist/
 coverage/
 front/.scannerwork/*
-front/reports/*
 
 ### STS ###
 .apt_generated
