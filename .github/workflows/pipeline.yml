@@ -83,7 +83,7 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=IshtamarFr_P10_CI_CD_AYzufB2H2DlNn7_50AJa -Dsonar.projectName='P10_CI_CD'
+        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=IshtamarFr_P10_CI_CD_back -Dsonar.projectName='P10_CI_CD_back'
 
   #TODO: Include here the sonarqube workflow-frontend
   #It will replace the needs for docker jobs
