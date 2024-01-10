@@ -7,6 +7,7 @@ on:
 jobs:
   sonarcloud:
     runs-on: ubuntu-latest
+
     defaults:
       run:
         working-directory: ./front
@@ -14,10 +15,12 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
       - name: Install dependencies
-        run: yarn install
-      - name: SonarCloud Scan
-        uses: sonarsource/sonarcloud-github-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: npm install
+
+      - name: install scanner
+        run: npm install -g sonarqube-scanner
+
+      - name: run sonar scanner
+        run: sonar-scanner
