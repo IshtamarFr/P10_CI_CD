@@ -3,7 +3,7 @@ name: CI CD Pipeline
 on:
   push:
     branches:
-      - sub
+      - main
 
 jobs:
   tests-back-end:
@@ -85,11 +85,30 @@ jobs:
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=IshtamarFr_P10_CI_CD_back -Dsonar.projectName='P10_CI_CD_back'
 
-  #TODO: Include here the sonarqube workflow-frontend
-  #It will replace the needs for docker jobs
+  sonarqube-front:
+    needs: [tests-front-end]
+
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./front
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: install scanner
+        run: npm install -g sonarqube-scanner
+
+      - name: run sonar scanner
+        run: sonar-scanner -Dsonar.token=${{secrets.SONAR_TOKEN}}
 
   build-push-dockers:
-    needs: [sonarqube-back]
+    needs: [sonarqube-back, sonarqube-front]
 
     runs-on: ubuntu-latest
 
