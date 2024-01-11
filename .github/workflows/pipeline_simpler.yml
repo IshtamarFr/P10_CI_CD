@@ -53,7 +53,7 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=IshtamarFr_P10_CI_CD_back -Dsonar.projectName='P10_CI_CD_back'
+        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
 
   analyze-front-end:
     runs-on: ubuntu-latest
