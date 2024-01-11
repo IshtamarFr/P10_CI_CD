@@ -38,7 +38,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: jacoco-report
-          path: back/target/site/jacoco/index.html
+          path: back/target/site/jacoco/*
 
       - name: Cache SonarQube packages
         uses: actions/cache@v3
@@ -67,6 +67,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
 
       - name: Install dependencies
         run: npm install
@@ -78,7 +80,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: jasmine-report
-          path: front/coverage/bobapp/lcov.info
+          path: front/coverage/bobapp/*
 
       - name: install scanner
         run: npm install -g sonarqube-scanner
