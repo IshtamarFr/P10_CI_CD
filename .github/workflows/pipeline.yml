@@ -3,7 +3,10 @@ name: CI CD Pipeline
 on:
   push:
     branches:
-      - sub
+      - nothing
+  pull_request:
+    branches:
+      - nothing
 
 jobs:
   tests-back-end:
