@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.7.15</version>
+		<version>3.2.5</version>
 		<relativePath/>
 	</parent>
 	<groupId>com.openclassrooms</groupId>
@@ -14,7 +14,7 @@
 	<name>bobapp</name>
 	<description>L'application de joke par excellence !</description>
 	<properties>
-		<java.version>11</java.version>
+		<java.version>21</java.version>
 		<sonar.projectKey>IshtamarFr_P10_CI_CD_back</sonar.projectKey>
 		<sonar.projectName>P10_CI_CD_back</sonar.projectName>
 		<sonar.qualitygate.wait>true</sonar.qualitygate.wait>
@@ -40,7 +40,6 @@
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.8.5</version>
 				<executions>
 					<execution>
 						<goals>
